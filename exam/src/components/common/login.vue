@@ -20,13 +20,6 @@
               <div class="submit">
                 <el-button type="primary" class="row-login" @click="login()">登录</el-button>
               </div>
-              <!-- <div class="options">
-                <p class="find"><a href="javascript:;">找回密码</a></p>
-                <div class="register">
-                  <span>没有账号?</span>
-                  <span><a href="javascript:;">去注册</a></span>
-                </div>
-              </div> -->
             </el-form>
           </div>
         </div>
@@ -34,14 +27,9 @@
     </el-row>
     <el-row class="footer">
       <el-col>
-        <p class="msg2">版权所有 ©wjh  保留所有权利  <a href="http://beian.miit.gov.cn/" target="_blank">渝ICP备19001371号</a></p>
+        <p class="msg2">版权所有 ©wjh  保留所有权利  <a href="http://beian.miit.gov.cn/" target="_blank">号</a></p>
       </el-col>
     </el-row>
-<!--    <section class="remind">-->
-<!--      <span>管理员账号：9527</span>-->
-<!--      <span>教师账号：20081001</span>-->
-<!--      <span>密码都是：123456</span>-->
-<!--    </section>-->
   </div>
 </template>
 
