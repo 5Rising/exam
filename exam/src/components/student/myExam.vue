@@ -13,20 +13,21 @@
           <h4 @click="toExamMsg(item.examCode)">{{item.source}}</h4>
           <p class="name">{{item.source}}-{{item.description}}</p>
           <div class="info">
-            <i class="el-icon-loading"></i><span>{{item.examDate.substr(0,19)}}</span>
-            <i class="iconfont icon-icon-time"></i><span v-if="item.totalTime != null">限时{{item.totalTime}}分钟</span>
+            <i class="el-icon-alarm-clock"></i><span>{{item.examDate.substr(0,19)}}</span>
             <i class="iconfont icon-fenshu"></i><span>满分{{item.totalScore}}分</span>
           </div>
         </li>
       </ul>
       <div class="pagination">
         <el-pagination
+
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="pagination.current"
-          :page-sizes="[6, 10, 20, 40]"
+          :page-sizes="[5, 10, 20, 40]"
           :page-size="pagination.size"
-          layout="total, sizes, prev, pager, next, jumper"
+          background
+          layout="total, sizes, prev, pager, next"
           :total="pagination.total">
         </el-pagination>
       </div>
@@ -45,7 +46,7 @@ export default {
       pagination: { //分页后的考试信息
         current: 1, //当前页
         total: null, //记录条数
-        size: 6 //每页条数
+        size: 5 //每页条数
       },
       institute:null
     }
@@ -137,27 +138,24 @@ export default {
   margin-right: 14px;
 }
 .paper .item {
-  width: 380px;
+  width: 200px;
   border-radius: 4px;
   padding: 20px 30px;
   border: 1px solid #eee;
-  box-shadow: 0 0 4px 2px rgba(217,222,234,0.3);
+  box-shadow: black;
   transition: all 0.6s ease;
 }
-.paper .item:hover {
-  box-shadow: 0 0 4px 2px rgba(140, 193, 248, 0.45);
-  transform: scale(1.03);
-}
+
 .paper .item .info {
   font-size: 14px;
-  color: #88949b;
+  color: cornflowerblue;
 }
 .paper .item .name {
   font-size: 14px;
   color: #88949b;
 }
 .paper * {
-  margin: 20px 0;
+  margin: 30px 0;
 }
 .wrapper .paper {
   display: flex;
@@ -202,16 +200,17 @@ export default {
   display: flex;
 }
 .wrapper .top li {
-  margin: 20px;
+  margin: 50px;
 }
 #myExam {
-  width: 980px;
+  width: 100%;
   margin: 0 auto;
 }
 #myExam .title {
   margin: 20px;
 }
 #myExam .wrapper {
-  background-color: #fff;
+  width: 100%;
+  background-color: white
 }
 </style>

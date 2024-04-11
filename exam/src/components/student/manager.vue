@@ -2,11 +2,11 @@
 <template>
   <div id='manager'>
     <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
-      <h3 class="alter">修改你的密码</h3>
-        <el-form-item label="密码" prop="pass" class="pass">
+      <h3 class="alter">修改密码</h3>
+        <el-form-item label="请输入密码" prop="pass" class="pass">
         <el-input type="password" v-model="ruleForm2.pass" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="确认密码" prop="checkPass">
+      <el-form-item label="再次确认密码" prop="checkPass">
         <el-input type="password" v-model="ruleForm2.checkPass" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item>

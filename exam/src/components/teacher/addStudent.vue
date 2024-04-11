@@ -11,7 +11,7 @@
       <el-form-item label="学院" prop="institute" required>
         <el-input v-model="form.institute"></el-input>
       </el-form-item>
-      <el-form-item label="所属专业" prop="maior" required>
+      <el-form-item label="所属专业" prop="major" required>
         <el-input v-model="form.major"></el-input>
       </el-form-item>
       <el-form-item label="年级" prop="grade" required >
@@ -23,7 +23,7 @@
       <el-form-item label="电话号码" prop="tel" required>
         <el-input v-model="form.tel"></el-input>
       </el-form-item>
-      <el-form-item label="身份证号" prop="cardid" required>
+      <el-form-item label="身份证号" prop="cardId" required>
         <el-input v-model="form.cardId"></el-input>
       </el-form-item>
       <el-form-item label="邮箱" prop="email" required>
@@ -33,7 +33,7 @@
         <el-input v-model="form.pwd"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit()">立即创建</el-button>
+        <el-button type="primary" @click="onSubmit('form')">立即创建</el-button>
         <el-button type="text" @click="cancel()">取消</el-button>
       </el-form-item>
     </el-form>
@@ -60,23 +60,31 @@ export default {
     };
   },
   methods: {
-    onSubmit() { //数据提交
-      this.$axios({
-        url: '/api/student',
-        method: 'post',
-        data: {
-          ...this.form
-        }
-      }).then(res => {
-        if(res.data.code == 200) {
-          this.$message({
-            message: '数据添加成功',
-            type: 'success'
+    onSubmit(form) {
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          this.$axios({
+            url: '/api/student',
+            method: 'post',
+            data: {
+              ...this.form
+            }
+          }).then(res => {
+            if(res.data.code == 200) {
+              this.$message({
+                message: '数据添加成功',
+                type: 'success'
+              })
+              this.$router.push({path: '/studentManage'})
+            }
           })
-          this.$router.push({path: '/studentManage'})
+        } else {
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
     },
+
     cancel() { //取消按钮
       this.form = {}
     },

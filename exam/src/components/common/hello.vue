@@ -1,15 +1,7 @@
 <template>
   <section class="index">
     <div class="hello">
-      <span>很高兴遇见你,{{user.userName}}老师。</span>
-    </div>
-    <div class="msg">
-      <p class="title">教务公告：</p>
-      <ul>
-        <li @click="openMsg()"><i class="iconfont icon-flag"></i>清明节放假通知</li>
-        <li @click="openMsg()"><i class="iconfont icon-flag"></i>下周例行工作报告会</li>
-        <li @click="openMsg()"><i class="iconfont icon-flag"></i>关于毕业生答辩具体流程</li>
-      </ul>
+      <span>你好！{{user.userName}}老师。</span>
     </div>
   </section>
 </template>

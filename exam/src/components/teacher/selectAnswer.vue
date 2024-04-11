@@ -15,7 +15,8 @@
       :current-page="pagination.current"
       :page-sizes="[6, 10]"
       :page-size="pagination.size"
-      layout="total, sizes, prev, pager, next, jumper"
+      background
+      layout="total, sizes, prev, pager, next"
       :total="pagination.total"
       class="page"
     ></el-pagination>
@@ -87,7 +88,7 @@ export default {
 }
   .el-table .warning-row {
     background: #000 !important;
-    
+
   }
 
   .el-table .success-row {

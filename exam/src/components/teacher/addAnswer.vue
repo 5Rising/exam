@@ -12,9 +12,10 @@
       <el-table-column prop="totalScore" label="总分" width="120"></el-table-column>
       <el-table-column prop="type" label="试卷类型" width="120"></el-table-column>
       <el-table-column prop="tips" label="考生提示" width="400"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="150">
+      <el-table-column fixed="right" label="操作" width="200">
         <template slot-scope="scope">
-          <el-button @click="add(scope.row.paperId,scope.row.source)" type="primary" size="small">增加题库</el-button>
+          <el-button @click="add(scope.row.paperId,scope.row.source)" type="primary" size="small">手动录入</el-button>
+          <el-button @click="add2(scope.row.paperId,scope.row.source)" type="primary" size="small">自动组卷</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -64,6 +65,9 @@ export default {
     },
     add(paperId,source) { //增加题库
       this.$router.push({path:'/addAnswerChildren',query: {paperId: paperId,subject:source}})
+    },
+    add2(paperId,source) { //增加题库
+      this.$router.push({path:'/autoAdd',query: {paperId: paperId,subject:source}})
     }
   },
 };

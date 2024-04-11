@@ -3,7 +3,7 @@
   <div class="add">
     <el-tabs v-model="activeName">
     <el-tab-pane name="first">
-      <span slot="label"><i class="el-icon-circle-plus"></i>添加试题</span>
+      <span slot="label">添加试题</span>
       <section class="append">
         <ul>
           <li>
@@ -139,6 +139,7 @@
               v-model="postChange.question"
               placeholder="请输入题目内容"
               resize="none"
+              aria-required="true"
               class="answer">
             </el-input>
           </div>
@@ -320,45 +321,6 @@
         </div>
       </section>
     </el-tab-pane>
-
-
-<!--      自动组卷-->
-    <el-tab-pane name="second">
-      <span slot="label"><i class="iconfont icon-daoru-tianchong"></i>在线组卷</span>
-      <div class="box">
-        <ul>
-          <li>
-            <span>试题难度:</span>
-            <el-select v-model="difficultyValue" placeholder="试题难度" class="w150">
-              <el-option
-                v-for="item in difficulty"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </li>
-          <li>
-            <span>选择题数量：</span> <el-input type="text" v-model="changeNumber"></el-input>
-          </li>
-          <li>
-            <span>填空题数量：</span> <el-input type="text" v-model="fillNumber"></el-input>
-          </li>
-          <li>
-            <span>判断题数量：</span> <el-input type="text" v-model="judgeNumber"></el-input>
-          </li>
-          <li>
-            <span>简答题数量：</span> <el-input type="text" v-model="shortanswerNumber"></el-input>
-          </li>
-          <li>
-            <span>代码题数量：</span> <el-input type="text" v-model="codeNumber"></el-input>
-          </li>
-          <li>
-            <el-button type="primary" @click="create()">立即组卷</el-button>
-          </li>
-        </ul>
-      </div>
-    </el-tab-pane>
   </el-tabs>
   </div>
 </template>
@@ -512,43 +474,50 @@ export default {
     //   console.log(tab, event);
     // },
     create() {
-      this.$axios({
-        url: '/api/item',
-        method: 'post',
-        data: {
-          changeNumber: this.changeNumber,
-          fillNumber: this.fillNumber,
-          judgeNumber: this.judgeNumber,
-          shortanswerNumber: this.shortanswerNumber,
-          codeNumber: this.codeNumber,
-          paperId: this.paperId,
-          subject: this.$route.query.subject //题目数量太少，指定为计算机网络出题
-        }
-      }).then(res => {
-        console.log(res)
-        console.log(this.codeNumber)
-        let data = res.data
-        if(data.code==200){
-          setTimeout(() => {
-            this.$router.push({path: '/selectAnswer'})
-          },1000)
-           this.$message({
-            message: data.message,
-            type: 'success'
-          })
-        }else if(data.code==400){
+      if (this.changeNumber!=null){
+        this.$axios({
+          url: '/api/item',
+          method: 'post',
+          data: {
+            changeNumber: this.changeNumber,
+            fillNumber: this.fillNumber,
+            judgeNumber: this.judgeNumber,
+            shortanswerNumber: this.shortanswerNumber,
+            codeNumber: this.codeNumber,
+            paperId: this.paperId,
+            subject: this.$route.query.subject
+          }
+        }).then(res => {
+          console.log(res)
+          console.log(this.codeNumber)
+          let data = res.data
+          if(data.code==200){
+            setTimeout(() => {
+              this.$router.push({path: '/selectAnswer'})
+            },1000)
             this.$message({
-            message: data.message,
-            type: 'error'
-          })
-        }else if (data.code==500){
-          this.$message({
-            message: '程序貌似崩溃了',
-            type: 'error'
-          })
-        }
+              message: data.message,
+              type: 'success'
+            })
+          }else if(data.code==400){
+            this.$message({
+              message: data.message,
+              type: 'error'
+            })
+          }else if (data.code==500){
+            this.$message({
+              message: '程序貌似崩溃了',
+              type: 'error'
+            })
+          }
 
-      })
+        })
+      }else {
+        this.$message({
+          message:'请输入完整信息'
+        })
+      }
+
     },
     getParams() {
       let subject = this.$route.query.subject //获取试卷名称
@@ -558,189 +527,219 @@ export default {
       this.postPaper.paperId = paperId
     },
     changeSubmit() { //选择题题库提交
-      this.postChange.subject = this.subject
-      this.$axios({ //提交数据到选择题题库表
-        url: '/api/MultiQuestion',
-        method: 'post',
-        data: {
-          ...this.postChange
-        }
-      }).then(res => { //添加成功显示提示
-        let status = res.data.code
-        if(status == 200) {
-          this.$message({
-            message: '已添加到题库',
-            type: 'success'
-          })
-          this.postChange = {}
-        }else {
-          this.$message({
-            message: '添加失败',
-            type: 'error'
-          })
-        }
-      }).then(() => {
-        this.$axios(`/api/multiQuestionId`).then(res => { //获取当前题目的questionId
-          let questionId = res.data.data.questionId
-          this.postPaper.questionId = questionId
-          this.postPaper.questionType = 1
-          this.$axios({
-            url: '/api/paperManage',
-            method: 'Post',
-            data: {
-              ...this.postPaper
-            }
+      if (this.postChange.question != ''){
+        this.postChange.subject = this.subject
+        this.$axios({ //提交数据到选择题题库表
+          url: '/api/MultiQuestion',
+          method: 'post',
+          data: {
+            ...this.postChange
+          }
+        }).then(res => { //添加成功显示提示
+          let status = res.data.code
+          if(status == 200) {
+            this.$message({
+              message: '已添加到题库',
+              type: 'success'
+            })
+            this.postChange = {}
+          }else {
+            this.$message({
+              message: '添加失败',
+              type: 'error'
+            })
+          }
+        }).then(() => {
+          this.$axios(`/api/multiQuestionId`).then(res => { //获取当前题目的questionId
+            let questionId = res.data.data.questionId
+            this.postPaper.questionId = questionId
+            this.postPaper.questionType = 1
+            this.$axios({
+              url: '/api/paperManage',
+              method: 'Post',
+              data: {
+                ...this.postPaper
+              }
+            })
           })
         })
-      })
+      }else {
+        this.$message({
+          message: '情输入完整信息'
+        })
+      }
     },
     fillSubmit() { //填空题提交
-      this.postFill.subject = this.subject
-      this.$axios({
-        url: '/api/fillQuestion',
-        method: 'post',
-        data: {
-          ...this.postFill
-        }
-      }).then(res => {
-        let status = res.data.code
-        if(status == 200) {
-          this.$message({
-            message: '已添加到题库',
-            type: 'success'
-          })
-          this.postFill = {}
-        }else {
-          this.$message({
-            message: '添加失败',
-            type: 'error'
-          })
-        }
-      }).then(() => {
-        this.$axios(`/api/fillQuestionId`).then(res => { //获取当前题目的questionId
-          let questionId = res.data.data.questionId
-          this.postPaper.questionId = questionId
-          this.postPaper.questionType = 2
-          this.$axios({
-            url: '/api/paperManage',
-            method: 'Post',
-            data: {
-              ...this.postPaper
-            }
+      if (this.postFill.question != ''){
+        this.postFill.subject = this.subject
+        this.$axios({
+          url: '/api/fillQuestion',
+          method: 'post',
+          data: {
+            ...this.postFill
+          }
+        }).then(res => {
+          let status = res.data.code
+          if(status == 200) {
+            this.$message({
+              message: '已添加到题库',
+              type: 'success'
+            })
+            this.postFill = {}
+          }else {
+            this.$message({
+              message: '添加失败',
+              type: 'error'
+            })
+          }
+        }).then(() => {
+          this.$axios(`/api/fillQuestionId`).then(res => { //获取当前题目的questionId
+            let questionId = res.data.data.questionId
+            this.postPaper.questionId = questionId
+            this.postPaper.questionType = 2
+            this.$axios({
+              url: '/api/paperManage',
+              method: 'Post',
+              data: {
+                ...this.postPaper
+              }
+            })
           })
         })
-      })
+      }else {
+        this.$message({
+          message: '情输入完整信息'
+        })
+      }
     },
     judgeSubmit() { //判断题提交
-      this.postJudge.subject = this.subject
-      this.$axios({
-        url: '/api/judgeQuestion',
-        method: 'post',
-        data: {
-          ...this.postJudge
-        }
-      }).then(res => {
-        let status = res.data.code
-        if(status == 200) {
-          this.$message({
-            message: '已添加到题库',
-            type: 'success'
-          })
-          this.postJudge = {}
-        }else {
-          this.$message({
-            message: '添加失败',
-            type: 'error'
-          })
-        }
-      }).then(() => {
-        this.$axios(`/api/judgeQuestionId`).then(res => { //获取当前题目的questionId
-          let questionId = res.data.data.questionId
-          this.postPaper.questionId = questionId
-          this.postPaper.questionType = 3
-          this.$axios({
-            url: '/api/paperManage',
-            method: 'Post',
-            data: {
-              ...this.postPaper
-            }
+      if (this.postJudge.question != ''){
+        this.postJudge.subject = this.subject
+        this.$axios({
+          url: '/api/judgeQuestion',
+          method: 'post',
+          data: {
+            ...this.postJudge
+          }
+        }).then(res => {
+          let status = res.data.code
+          if(status == 200) {
+            this.$message({
+              message: '已添加到题库',
+              type: 'success'
+            })
+            this.postJudge = {}
+          }else {
+            this.$message({
+              message: '添加失败',
+              type: 'error'
+            })
+          }
+        }).then(() => {
+          this.$axios(`/api/judgeQuestionId`).then(res => { //获取当前题目的questionId
+            let questionId = res.data.data.questionId
+            this.postPaper.questionId = questionId
+            this.postPaper.questionType = 3
+            this.$axios({
+              url: '/api/paperManage',
+              method: 'Post',
+              data: {
+                ...this.postPaper
+              }
+            })
           })
         })
-      })
+      }else {
+        this.$message({
+          message: '情输入完整信息'
+        })
+      }
     },
     shortanswerSubmit() { //填空题提交
-      this.postShort.subject = this.subject
-      this.$axios({
-        url: '/api/shortanswerQuestion',
-        method: 'post',
-        data: {
-          ...this.postShort
-        }
-      }).then(res => {
-        let status = res.data.code
-        if(status == 200) {
-          this.$message({
-            message: '已添加到题库',
-            type: 'success'
-          })
-          this.postShort = {}
-        }else {
-          this.$message({
-            message: '添加失败',
-            type: 'error'
-          })
-        }
-      }).then(() => {
-        this.$axios(`/api/shortanswerQuestionId`).then(res => { //获取当前题目的questionId
-          let questionId = res.data.data.questionId
-          this.postPaper.questionId = questionId
-          this.postPaper.questionType = 4
-          this.$axios({
-            url: '/api/paperManage',
-            method: 'Post',
-            data: {
-              ...this.postPaper
-            }
+      if (this.postShort.question != ''){
+        this.postShort.subject = this.subject
+        this.$axios({
+          url: '/api/shortanswerQuestion',
+          method: 'post',
+          data: {
+            ...this.postShort
+          }
+        }).then(res => {
+          let status = res.data.code
+          if(status == 200) {
+            this.$message({
+              message: '已添加到题库',
+              type: 'success'
+            })
+            this.postShort = {}
+          }else {
+            this.$message({
+              message: '添加失败',
+              type: 'error'
+            })
+          }
+        }).then(() => {
+          this.$axios(`/api/shortanswerQuestionId`).then(res => { //获取当前题目的questionId
+            let questionId = res.data.data.questionId
+            this.postPaper.questionId = questionId
+            this.postPaper.questionType = 4
+            this.$axios({
+              url: '/api/paperManage',
+              method: 'Post',
+              data: {
+                ...this.postPaper
+              }
+            })
           })
         })
-      })
+      }else {
+        this.$message({
+          message: '情输入完整信息'
+        })
+      }
     },
     codeSubmit(){
-      this.postCode.subject = this.subject
-      this.$axios({
-        url: '/api/codeQuestion',
-        method: 'post',
-        data: {
-          ...this.postCode
-        }
-      }).then(res => {
-        let status = res.data.code
-        if(status == 200) {
-          this.$message({
-            message: '已添加到题库',
-            type: 'success'
-          })
-          this.postCode = {}
-        }else {
-          this.$message({
-            message: '添加失败',
-            type: 'error'
-          })
-        }
-      }).then(() => {
-        this.$axios(`/api/codeQuestionId`).then(res => { //获取当前题目的questionId
-          let questionId = res.data.data.questionId
-          this.postPaper.questionId = questionId
-          this.postPaper.questionType = 5
-          this.$axios({
-            url: '/api/paperManage',
-            method: 'Post',
-            data: {
-              ...this.postPaper
-            }
+      if (this.postCode.question != ''){
+        this.postCode.subject = this.subject
+        this.$axios({
+          url: '/api/codeQuestion',
+          method: 'post',
+          data: {
+            ...this.postCode
+          }
+        }).then(res => {
+          let status = res.data.code
+          if(status == 200) {
+            this.$message({
+              message: '已添加到题库',
+              type: 'success'
+            })
+            this.postCode = {}
+          }else {
+            this.$message({
+              message: '添加失败',
+              type: 'error'
+            })
+          }
+        }).then(() => {
+          this.$axios(`/api/codeQuestionId`).then(res => { //获取当前题目的questionId
+            let questionId = res.data.data.questionId
+            this.postPaper.questionId = questionId
+            this.postPaper.questionType = 5
+            this.$axios({
+              url: '/api/paperManage',
+              method: 'Post',
+              data: {
+                ...this.postPaper
+              }
+            })
           })
         })
-      })
+      }else {
+        this.$message({
+          message: '情输入完整信息'
+        })
+      }
     }
   },
 };
@@ -799,7 +798,7 @@ export default {
     .change {
       margin-top: 20px;
       padding: 20px 16px;
-      background-color: #E7F6F6;
+      background-color: white;
       border-radius: 4px;
       .title {
         padding-left: 6px;

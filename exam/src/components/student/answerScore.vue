@@ -1,23 +1,16 @@
 <template>
-  <div class="score">
-    <div class="title">
-      <p class="name">学科:{{this.subject}}</p>
-      <p class="description">(总分：{{this.totalScore}}分)</p>
-    </div>
-    <div class="total">
-      <div class="look">
-        本次考试成绩
-      </div>
-      <div class="show">
-          <span>{{score}}</span>
-          <span>分数</span>
-        </div>
-      <ul class="time">
-        <li class="start"><span>开始时间</span> <span>{{startTime}}</span></li>
-        <li class="end"><span>结束时间</span> <span>{{endTime}}</span></li>
-      </ul>
-    </div>
-  </div>
+
+  <el-result subTitle= "本次考试分数" >
+    <template slot="icon">
+      <h1>{{this.score}}</h1>
+    </template>
+    <template slot="extra">
+      <h3>开始时间：{{this.startTime}}</h3>
+      <h3>结束时间：{{this.endTime}}</h3>
+      <el-button type="primary" size="medium" @click="exit">退出</el-button>
+    </template>
+  </el-result>
+
 </template>
 
 <script>
@@ -25,7 +18,6 @@ import * as auth from '../../utiles/auth'
 export default {
   data() {
     return {
-      isTransition: false, //是否渲染完成
       score: 0, //总分
       imgShow: false, //不及格图片显示
       startTime: null, //考试开始时间
@@ -35,16 +27,15 @@ export default {
     }
   },
   created() {
-    this.transiton()
     this.getScore()
     auth.removeAdminInfo()
   },
   methods: {
-    transiton() {  //一秒后过渡
-      setTimeout(() => {
-        this.isTransition = true
-        this.imgShow = true
-      },1000)
+    exit() {  //退出登录
+      auth.removeAdminInfo()
+      this.$cookies.remove("cname") //清除cookie
+      this.$cookies.remove("cid")
+      this.$router.push({path:"/"}) //跳转到登录页面
     },
     getScore() {
       let subject = this.$route.query.subject
@@ -107,20 +98,20 @@ export default {
     margin: 20px 0px;
   }
   li:nth-child(1) {
-    background-color: #fcf8e3;
+    background-color: white;
   }
   li:nth-child(2) {
-    background-color: #e9f5e9;
+    background-color: white;
   }
 }
-.border {
-  border: 6px solid #36aafd !important;
-  transition: all 2s ease;
-  width: 160px !important;
-  height: 160px !important;
-  transform: rotate(360deg) !important;
-  opacity: 1 !important;
-}
+//.border {
+//  border: 6px solid #36aafd !important;
+//  transition: all 2s ease;
+//  width: 160px !important;
+//  height: 160px !important;
+//  transform: rotate(360deg) !important;
+//  opacity: 1 !important;
+//}
 .score {
   max-width: 800px;
   margin: 0 auto;

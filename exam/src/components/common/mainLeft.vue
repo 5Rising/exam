@@ -9,12 +9,11 @@
       @open="handleOpen"
       @close="handleClose"
       :collapse="flag"
-      background-color="#4d58b5"
+      background-color="#ffffff"
       menu-trigger="click" router>
       <el-submenu v-for="(item,index) in menu" :index='item.index' :key="index">
         <template slot="title">
           <div class="left-width">
-            <i class="iconfont" :class="item.icon"></i>
             <span slot="title" class="title">{{item.title}}</span>
           </div>
         </template>
@@ -89,7 +88,7 @@ export default {
   z-index: 0;
 }
 #left .el-menu-vertical-demo .title {
-  color: #fff;
+  color: black;
   font-size: 16px;
   font-weight: bold;
   margin-left: 14px;

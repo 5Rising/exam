@@ -24,18 +24,17 @@
       </div>
       <div class="all">
         <ul class="msglist">
-          <li class="list" 
-          @mouseenter="enter(index)" 
-          @mouseleave="leave(index)"
+          <li class="list"
           v-for="(data,index) in msg" :key="index"
           >
-            <p class="title"> <i class="iconfont icon-untitled33"></i>{{data.title}}</p>
+            <p class="title"><h3>标题：{{data.title}}</h3></p>
             <p class="content">{{data.content}}</p>
-            <p class="date"><i class="iconfont icon-date"></i>{{data.time}}</p>
+            <p class="date">{{data.time}}</p>
             <div v-for="(replayData,index2) in data.replays" :key="index2">
-              <p class="comment"><i class="iconfont icon-huifuxiaoxi"></i>{{replayData.replay}}</p>
+              <p class="comment">回复：{{replayData.replay}}</p>
             </div>
-            <span class="replay" @click="replay(data.id)" v-if="flag && index == current">Comment</span>
+            <el-button type="primary" icon="el-icon-edit" circle @click="replay(data.id)"></el-button>
+            <el-button type="danger" icon="el-icon-delete" circle @click="de(data.id)"></el-button>
           </li>
         </ul>
       </div>
@@ -75,9 +74,15 @@ export default {
     this.getMsg()
   },
   // watch: {
-    
+
   // },
   methods: {
+    de(messageId){
+      this.$axios.delete(`/api/message/${messageId}`).then(res =>{
+        this.getMsg()
+      })
+    },
+
     getMsg() {
       this.$axios(`/api/messages/${this.pagination.current}/${this.pagination.size}`).then(res => {
         let status = res.data.code
@@ -166,29 +171,22 @@ export default {
         this.$message({
           type: 'info',
           message: '取消输入'
-        });       
+        });
       });
     },
-    enter(index) {
-      this.flag = true
-      this.current = index
-    },
-    leave(index) {
-      this.flag = false;
-      this.current = index;
-    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+
 .pagination {
   display: flex;
   justify-content: center;
 }
 #message {
-  width: 980px;
-  margin: 0 auto;
+  width: 100%;
+  margin-left: 10px
 }
 .title {
   margin: 20px;
@@ -202,7 +200,7 @@ export default {
   }
   .all {
     .date {
-      color: rgb(80, 157, 202);
+      color: black;
       line-height: 45px;
       font-size: 13px;
     }
@@ -240,10 +238,10 @@ export default {
         transition: all .3s ease;
       }
       .comment {
-        margin:-7px 0px; 
+        margin:-7px 0px;
         padding-bottom: 12px;
         font-size: 13px;
-        color: #28b2b4;
+        color: gray;
         i {
           margin-right: 4px;
         }
@@ -254,6 +252,6 @@ export default {
 #message .wrapper {
   background-color: #fff;
   padding: 20px;
-
+  width:100%;
 }
 </style>

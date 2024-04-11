@@ -1,33 +1,32 @@
 <template>
-  <div class="part" >
+  <div class="test2" style="width:600px;height:400px;">
     <div v-if="isNull">
       <h1>该门考试还没人参考哦,请提醒学生参加考试。</h1>
     </div>
-    <div class="box" ref="box"></div>
+    <div id="myChart4" style="width:100%;height:250px;float:left;" ref="box"></div>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
+  name: 'test2',
+  data () {
     return {
-      isNull: false, //是否有成绩标志位
       name: null,
-      category: { //保存分数段
-        '90分及以上': 0,
-        '80-89分': 0,
-        '70-79分': 0,
-        '60-69分': 0,
-        '60分以下': 0,
-      }
+      isNull: false,
+      A: 0,
+      B: 0,
+      C: 0,
+      D: 0,
+      E: 0,
+      opinion: ['90分以上', '80-90分','70-79分','60-69分','60分以下'],
     }
   },
-  created() {
-    this.getScoreInfo()
-
+  mounted: function () {
+    this.drawLine4()
   },
   methods: {
-    getScoreInfo() {
+    drawLine4 () {
       let examCode = this.$route.query.examCode
       this.name = this.$route.query.source
       this.$axios(`/api/scores/${examCode}`).then(res => {
@@ -36,81 +35,77 @@ export default {
           let box = this.$refs['box']
           let charts = this.$echarts.init(box)
           data.forEach(element => {
-            switch(element.etScore / 10) {
+            console.log(element.etScore)
+            let A = this.A
+            let B = this.B
+            let C = this.C
+            let D = this.D
+            let E = this.E
+            switch(Math.floor(element.etScore / 10)) {
               case 10:
               case 9:
-                this.category["90分及以上"]++
+                this.A = A + 1
                 break
               case 8:
-                this.category['80-89分']++
+                this.B = B + 1
                 break
               case 7:
-                this.category["70-79分"]++
+                this.C = C + 1
                 break
               case 6:
-                this.category['60-69分']++
+                this.D = D + 1
                 break
               default:
-                this.category['60分以下']++
+                this.E = E + 1
             }
           });
+          console.log(this.A)
+          console.log(this.B)
+          console.log(this.C)
+          console.log(this.D)
+          console.log(this.E)
           let option = {
-              title : {
-                  text: `${this.name}分数段图`,
-                  subtext: '分数段饼图',
-                  x:'center'
-              },
-              tooltip : {
-                  trigger: 'item',
-                  formatter: "{a}：{b} <br/> {c}人 ({d}%)"
-              },
-              legend: {
-                  orient: 'vertical',
-                  left: 'left',
-                  data: ['90分及以上','80-89分','70-79分','60-69分','60分以下']
-              },
-              series : [
-                  {
-                      name: '分数段',
-                      type: 'pie',
-                      radius : '35%',
-                      center: ['50%', '35%'],
-                      data:[
-                          {value:this.category['90分及以上'], name:'90分及以上'},
-                          {value:this.category['80-89分'], name:'80-89分'},
-                          {value:this.category['70-79分'], name:'70-79分'},
-                          {value:this.category['60-69分'], name:'60-69分'},
-                          {value:this.category['60分以下'], name:'60分以下'}
-                      ],
-                      itemStyle: {
-                          emphasis: {
-                              shadowBlur: 10,
-                              shadowOffsetX: 0,
-                              shadowColor: 'rgba(0, 0, 0, 0.5)'
-                          }
-                      }
-                  }
-              ]
+            title: {
+              text: this.name+"分数段直方图"
+            },
+            tooltip: {
+              trigger: 'item',
+              formatter: '{a} <br/>{b} : {c}%'
+            },
+            xAxis: {
+              data: this.opinion
+            },
+            yAxis: {},
+            series: [{
+              name: '评估概率',
+              type: 'bar',
+              data:  [
+                {value:this.A, name:'90分及以上'},
+                {value:this.B, name:'80-89分'},
+                {value:this.C, name:'70-79分'},
+                {value:this.D, name:'60-69分'},
+                {value:this.E, name:'60分以下'}
+              ],
+              itemStyle: {
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                },
+                color: function (params) {
+                  // 自定义颜色
+                  var colorList = ['#1ab394', 'red']
+                  return colorList[params.dataIndex]
+                }
+              }
+            }]
           };
           charts.setOption(option)
-        }else {
+        }else{
           this.isNull = true
         }
       })
     }
-  },
-
-}
-</script>
-
-<style lang="scss" scoped>
-.part {
-  .box {
-    width: 800px;
-    height: 800px;
-    margin-left: 40px;
   }
 }
-</style>
-
-
+</script>
